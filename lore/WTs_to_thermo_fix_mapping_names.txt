@@ -1,0 +1,10 @@
+dca_f_sequenza_682 wt_1
+dca_f_sequenza_689 wt_2
+dca_f_sequenza_698 wt_3
+dca_f_sequenza_707 wt_4
+dca_f_sequenza_739 wt_5
+dca_f_sequenza_762 wt_6
+dca_f_sequenza_794 wt_7
+dca_f_sequenza_799 wt_8
+old_dca_619_20_30 wt_9
+old_dca_953_30_40 wt_10
