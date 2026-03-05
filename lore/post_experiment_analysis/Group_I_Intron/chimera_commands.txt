@@ -1,0 +1,4 @@
+delete :K,MG
+renumber /B:5-107 start 2
+renumber /B:112-190 start 119
+renumber /B:1001-1014 start 105
