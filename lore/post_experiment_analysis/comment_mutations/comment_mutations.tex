@@ -41,9 +41,9 @@
     The mutation A25G alone is very deleterious in terms of DCA energy, but sensitively improves the BP score.
     When coupling the two mutations, we observe a strong increase of the BP score, although the DCA energy increases. Therefore, this is a BP score induced double mutation.
 
-    \item \textbf{A20C}: This is another rare mutation that is found in the best mutant. It changes the WC pair A-U in a A-C, removing the double hydrogen bound and enlarging the internal loop.
+    \item \textbf{U20C}: This is another rare mutation that is found in the best mutant. It changes the WC pair A-U in a A-C, removing the double hydrogen bound and enlarging the internal loop.
     In the WT context, this mutation is deleterious in terms of DCA energy, but it slightly increases the BP score.
-    Instead, in the context of the best mutant, the reversed mutation C20A is beneficial for both scores, suggesting that it is a quite unstable mutation.
+    Instead, in the context of the best mutant, the reversed mutation C20U is beneficial for both scores, suggesting that it is a quite unstable, and probably noise-induced, mutation.
 
     \item \textbf{G41U}: This is a very important mutation that is observed in almost all high-activity mutants.
     It drastically improves the SB score while also decreasing the DCA energy. Since site 41 is part of a single-stranded region, this mutation can't be explained in terms of WC pairs or deduced from the consensus secondary structure.
@@ -69,5 +69,34 @@
     \caption{Frequency of each mutation in the mutants for the mutation G41X (left) and C99X (right).}
     \label{fig:wt_5 G41X and C99X}
     \end{figure}
+
+\section{Wild-type 9}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{figures/forna_wt_9.png}
+    \caption{Wild-type 9 (left) and the best mutant (right) visualized using the consensus secondary structure.}
+    \label{fig:structure wt_9}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{figures/wt_9_mutations.png}
+    \caption{Visualization of the effect of mutations in wild-type 9 in terms of $\Delta \mathcal{S}_{\mathrm{sb}}$ and $\Delta \mathcal{H}_{\mathrm{gen}}$ in the context of the wild-type (left) and the best mutant (right)}
+    \label{fig:mutations wt_9}
+\end{figure}
+
+Globally, it is interesting to notice (Fig.~\ref{fig:mutations wt_9}, right) that the joint epistatic effect of all the mutations has the effect of fixating each single muatation in the context of the best mutant.
+In other words, reverting any single mutation in the best mutant would be deleterious in terms of DCA energy, even for those single mutations (G98A and G57A) that would produce an increasing of the DCA energy if they were introduced in the context of the wild-type.
+
+\begin{itemize}
+    \item \textbf{G6U}: Changes a G in a U in the stem, creating an A-U WC pair where before there was an A-G non-canonical pair. This translates in a strong gain in the SB score.
+    \item \textbf{G57A + C70U}: This is an interesting double mutation that, unespectedly, sacrifices a strong G-C pair in the stem (G57-C70) to create a weaker A-U pair.
+    The mutation G57A alone would be deleterious for both scores, while the mutation C70U alone would be nearly neutral. The co-occurance of the two mutations, insted, is close to neutral in terms of BP score, but very beneficial in terms of DCA energy. Therefore, we observe a strong epistatic effect between these two mutations.
+    \item \textbf{C71U}: Changes the A-C pair in between the end of the stem and the beginning of the internal loop in a A-U pair improving both scores, especially the DCA score.
+    \item \textbf{G98A}: Creates a A-U pair between the end of the stem and the beginning of the hairpin loop. This mutation is almost neutral in terms of DCA energy, but it is the most beneficial in terms of the SB score.
+    \item \textbf{U144G}: This mutation introduces a strong G-C pair right before the hairpin loop. In terms of position it is similar to the mutation G98A, but i is interesting to notice that, while the 
+    G98A is very beneficial in terms of SB score, this mutation is neutral for the SB score but the most beneficial in terms of DCA energy.
+    \item \textbf{G194C}: Introduces a strong G-C pair for closing the internal loop. It is moderately beneficial for both scores.
+\end{itemize}
 
 \end{document}

@@ -1,0 +1,23 @@
+# Sequence and structure
+>wt_7
+GUGAUUUUCGCCGGGAGUCCCCGUAAGGAAUGGUGUCAAAUUCGGCGAAACCUAAACGACCGAAAGGUCGUAUGGCAACGCCGAGCCAAGCUUUGGUAGAAAUGUCAUUGAAGGUGUAGAGACUAGACGGCACCCACCUAAGGCAAUCUCUAUGGUGAAGGCAUAGUCCAGAGAGUGACGAAAGUCACACAUACCGG
+...(((((((..((....)).)))))))...((((((....((((((...((...((((((....))))))..))...))))))(((...(.((((((....)))))).)..)))...(.(((((...))))))((((...(((....)))..))))......))))))..((.(((((....))))).....))..
+>mutant
+GUGCUUUACGCCGGGAGUUCGCGUAAAGAAUGGUGUCAAAUUCGGUGAAACCUAAACGACCGAAAGGUCGUAUGGCAACGCCGAGCCAAGCUUUGGCAGAAAUGCCAUUGAAGGUGUAGAGACUAGACGGCACCCACCUAAGGCAAUCGCUAUGGUGAAGGCAUAGUCCAGAGAGUGACGAAAGUCACACAAACCGG
+...(((((((..((....)).)))))))...((((((....((((((...((...((((((....))))))..))...))))))(((...(.((((((....)))))).)..)))...(.(((((...))))))((((...(((....)))..))))......))))))..((.(((((....))))).....))..
+
+# Color codes
+>wt_7
+range=red:white
+1.0 1.0 1.0 0.40540540540540543 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.16216216216216217 1.0 1.0 1.0 1.0 1.0 0.7027027027027027 1.0 0.972972972972973 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.972972972972973 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.972972972972973 1.0 1.0 1.0 0.972972972972973 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.8918918918918919 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 0.9459459459459459 1.0 1.0 1.0 
+>mutant
+4:cornflowerblue
+8:cornflowerblue
+19:cornflowerblue
+21:cornflowerblue
+27:cornflowerblue
+46:cornflowerblue
+97:cornflowerblue
+105:cornflowerblue
+149:cornflowerblue
+192:cornflowerblue

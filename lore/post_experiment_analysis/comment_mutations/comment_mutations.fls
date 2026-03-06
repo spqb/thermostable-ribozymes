@@ -1,8 +1,8 @@
-PWD /Users/lorenzo/Desktop/project_ribozymes/comment_mutations
+PWD /Users/lorenzo/Documents/PhD/github/GPSopt/lore/post_experiment_analysis/comment_mutations
 INPUT /usr/local/texlive/2025basic/texmf.cnf
 INPUT /usr/local/texlive/2025basic/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2025basic/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /Users/lorenzo/Desktop/project_ribozymes/comment_mutations/comment_mutations.tex
+INPUT /Users/lorenzo/Documents/PhD/github/GPSopt/lore/post_experiment_analysis/comment_mutations/comment_mutations.tex
 OUTPUT comment_mutations.log
 INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2025basic/texmf-dist/tex/latex/base/article.cls
@@ -85,6 +85,16 @@ INPUT ./figures/wt_5-C99X.png
 INPUT ./figures/wt_5-C99X.png
 INPUT ./figures/wt_5-C99X.png
 INPUT ./figures/wt_5-C99X.png
+INPUT ./figures/forna_wt_9.png
+INPUT ./figures/forna_wt_9.png
+INPUT ./figures/forna_wt_9.png
+INPUT ./figures/forna_wt_9.png
+INPUT ./figures/forna_wt_9.png
+INPUT ./figures/wt_9_mutations.png
+INPUT ./figures/wt_9_mutations.png
+INPUT ./figures/wt_9_mutations.png
+INPUT ./figures/wt_9_mutations.png
+INPUT ./figures/wt_9_mutations.png
 INPUT comment_mutations.aux
 INPUT /usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 INPUT /usr/local/texlive/2025basic/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb

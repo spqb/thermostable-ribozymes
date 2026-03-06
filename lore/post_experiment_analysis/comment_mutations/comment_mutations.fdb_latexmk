@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1772212420.02312 "/Users/lorenzo/Desktop/project_ribozymes/comment_mutations/comment_mutations.tex" "comment_mutations.pdf" "comment_mutations" 1772212420.6685 0
-  "/Users/lorenzo/Desktop/project_ribozymes/comment_mutations/comment_mutations.tex" 1772212419.93638 4568 624a8157b4886ab0e1392fd597b5afb1 ""
+["pdflatex"] 1772804290.05449 "/Users/lorenzo/Documents/PhD/github/GPSopt/lore/post_experiment_analysis/comment_mutations/comment_mutations.tex" "comment_mutations.pdf" "comment_mutations" 1772804291.11488 0
+  "/Users/lorenzo/Documents/PhD/github/GPSopt/lore/post_experiment_analysis/comment_mutations/comment_mutations.tex" 1772803415.68843 7314 e9327422a96763a019e5924f7626f542 ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm" 1136768653 1536 e07581a4bb3136ece9eeb4c3ffab8233 ""
   "/usr/local/texlive/2025basic/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
@@ -42,13 +42,15 @@
   "/usr/local/texlive/2025basic/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1767362684 323232 d98476a7e2a56088aa3c60f912832a84 ""
   "/usr/local/texlive/2025basic/texmf-var/web2c/pdftex/pdflatex.fmt" 1767361420 2663821 e6328035761cc70fd2db63c1f7c0fa8c ""
   "/usr/local/texlive/2025basic/texmf.cnf" 1741448314 628 81d1ada0f601fb1ffa62f1323192d946 ""
-  "comment_mutations.aux" 1772212420.64692 1318 85bd1f4673ca8754f425e4f28a1a0192 "pdflatex"
-  "comment_mutations.tex" 1772212419.93638 4568 624a8157b4886ab0e1392fd597b5afb1 ""
+  "comment_mutations.aux" 1772804291.09246 2042 1e4c16344f331514f889dc0ac354e9e4 "pdflatex"
+  "comment_mutations.tex" 1772803415.68843 7314 e9327422a96763a019e5924f7626f542 ""
   "figures/forna_azoarcus.png" 1772210632 361634 f65de48b3a85f8a3486ce07246eeb76a ""
-  "figures/forna_wt_5.png" 1772036048.33572 685588 c2bf40f3fead0119db023be722d6bc8b ""
+  "figures/forna_wt_5.png" 1772803399.76033 706411 41acc42d2ad51aa129e1227e122aa892 ""
+  "figures/forna_wt_9.png" 1772800923.45909 560707 efefb26a6ea5e42a5ab5352a8d27d105 ""
   "figures/wt_5-C99X.png" 1772207369.23083 10189 2ff86eb3e3a5d336b935b6d527b1bac1 ""
   "figures/wt_5-G41X.png" 1772207670.54147 10162 fd6b90cddf612415d35560d486fc4212 ""
   "figures/wt_5_mutations.png" 1772035126.51916 67737 3838095105e426306d0db7ed880a2d6a ""
+  "figures/wt_9_mutations.png" 1772804289.53976 191094 d8135685960cc18a86dc59281a2fb05e ""
   (generated)
   "comment_mutations.aux"
   "comment_mutations.log"
