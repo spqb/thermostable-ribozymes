@@ -15,8 +15,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pandas as pd
 
-from gpsopt import data, dca, rna
-from gpsopt.config import TABLES
+from thermodca import data, dca, rna
+from thermodca.config import TABLES
 
 
 def main(n_workers):

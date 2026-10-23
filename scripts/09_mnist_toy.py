@@ -17,8 +17,8 @@ import numpy as np
 import seaborn as sns
 from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 
-from gpsopt.config import DATA
-from gpsopt.plotting import save_figure, use_paper_style
+from thermodca.config import DATA
+from thermodca.plotting import save_figure, use_paper_style
 
 # key in the npz file, plot colour, selection of the samples shown, label, offset (points) of the example image
 REGIONS = [

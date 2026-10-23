@@ -31,13 +31,13 @@ Each item says what was found, why it matters, and what the repository currently
   β = 0, λ_S = 3.5 for ↑H ↓S) and a single λ_D = 2.0 (from the old notebook) are recorded.
   With λ_D = 2, 4 and 6 the structure-only group (↑H ↓S) yields no design within the budget (5–10 substitutions
   from the start, `S_sb < −33`, `H_gen > 110`) in the test runs; the λ_D used for the experiment is not known.
-- **Repository:** `gpsopt/config.py` uses λ_D = 2.0 for all three regions; see the note in the main README.
+- **Repository:** `thermodca/config.py` uses λ_D = 2.0 for all three regions; see the note in the main README.
 
 ### 4. Distance from Azoarcus
 
 - **Found:** the paper (Methods) restricts the designs to 25–30 substitutions from Azoarcus, but SI Table IV shows
   designs up to 35 (the ↑H ↓S group of starts 6, 7, 8 and 10, and the ↓H ↑S group of start 6).
-- **Repository:** `AZO_RANGE = (25, 30)` in `gpsopt/config.py`.
+- **Repository:** `AZO_RANGE = (25, 30)` in `thermodca/config.py`.
 
 ### 5. Gap symbol
 
@@ -51,7 +51,7 @@ Each item says what was found, why it matters, and what the repository currently
 - **ΔG panels of SI Figs. 2–3:** the original code replaced `[`/`]` by `(`/`)` before evaluating the free energy,
   which turns the pseudoknot into nested stems and gives a different pairing pattern; the Table II values use the
   structure without the pseudoknot. The SI figures are reproduced with the original convention
-  (`pseudoknot="merge"` in `gpsopt/rna.py`).
+  (`pseudoknot="merge"` in `thermodca/rna.py`).
 - **Region names:** because `S_sb` changed sign (the original "SB score" was `−S_sb`), the original `lowDCA_highSB` is now
   `lowDCA_lowSB` (↓H ↓S), the original `lowDCA_lowSB` is now `lowDCA_highSB` (↓H ↑S) and `highDCA_highSB` is now
   `highDCA_lowSB` (↑H ↓S).

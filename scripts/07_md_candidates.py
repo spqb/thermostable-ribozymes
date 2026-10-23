@@ -28,9 +28,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pandas as pd
 
-from gpsopt import data
-from gpsopt.analysis import INACTIVE_DELTA, delta_activity_table, mutation_frequency
-from gpsopt.config import MD
+from thermodca import data
+from thermodca.analysis import INACTIVE_DELTA, delta_activity_table, mutation_frequency
+from thermodca.config import MD
 
 COLORS = dict(away_from_azo="forestgreen", back_to_azo="coral", new="cornflowerblue", unchanged="lightgrey")
 

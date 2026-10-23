@@ -1,6 +1,6 @@
 """Step 2 - design variants of the starting sequences with the effective Hamiltonian (Eq. 6).
 
-Three regions of the (H_gen, S_sb) plane are populated for each starting sequence (see gpsopt/config.py):
+Three regions of the (H_gen, S_sb) plane are populated for each starting sequence (see thermodca/config.py):
   lowDCA_lowSB  (low H_gen, low S_sb)   jointly optimised designs
   lowDCA_highSB (low H_gen, high S_sb)  evolutionary score only
   highDCA_lowSB (high H_gen, low S_sb)  structure-based score only
@@ -24,8 +24,8 @@ import numpy as np
 import pandas as pd
 import torch
 
-from gpsopt import data, dca, design
-from gpsopt.config import DESIGN, DESIGN_GROUPS, DESIGN_PARAMS, N_PER_REGION
+from thermodca import data, dca, design
+from thermodca.config import DESIGN, DESIGN_GROUPS, DESIGN_PARAMS, N_PER_REGION
 
 
 def main(args):

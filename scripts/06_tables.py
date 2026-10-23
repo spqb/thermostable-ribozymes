@@ -23,8 +23,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import numpy as np
 import pandas as pd
 
-from gpsopt import data, rna
-from gpsopt.config import DESIGN_GROUPS, TABLES
+from thermodca import data, rna
+from thermodca.config import DESIGN_GROUPS, TABLES
 
 DDG_TEMPERATURE = 60.0
 

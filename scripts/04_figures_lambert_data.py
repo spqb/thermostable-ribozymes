@@ -15,9 +15,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import pearsonr
 
-from gpsopt import data
-from gpsopt.config import TABLES
-from gpsopt.plotting import save_figure, use_paper_style
+from thermodca import data
+from thermodca.config import TABLES
+from thermodca.plotting import save_figure, use_paper_style
 
 # Activity thresholds on the original scale of Lambert et al. (SI: "illustrative cutoff")
 ACTIVITY_THRESHOLD_37 = -2.76

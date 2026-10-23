@@ -17,7 +17,7 @@ Both terms are needed to recover activity at 60 °C (hit rate 72.5% for the join
 
 ```
 data/        input data (see data/README.md)
-gpsopt/      small python package: DCA model, Turner-model scores, design sampler, plotting style
+thermodca/      small python package: DCA model, Turner-model scores, design sampler, plotting style
 scripts/     numbered scripts that reproduce the pipeline (below)
 results/     tables, figures and design outputs written by the scripts
 run_all.sh   runs the whole analysis

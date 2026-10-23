@@ -23,10 +23,10 @@ import pandas as pd
 import seaborn as sns
 from matplotlib.patches import Patch
 
-from gpsopt import data
-from gpsopt.analysis import INACTIVE_DELTA, delta_activity_table
-from gpsopt.config import GROUP_COLORS, GROUP_LABELS, HIT_THRESHOLD, TABLES
-from gpsopt.plotting import save_figure, use_paper_style
+from thermodca import data
+from thermodca.analysis import INACTIVE_DELTA, delta_activity_table
+from thermodca.config import GROUP_COLORS, GROUP_LABELS, HIT_THRESHOLD, TABLES
+from thermodca.plotting import save_figure, use_paper_style
 
 UNDETECTED = -5.0   # plotting value of sequences without detected activity
 

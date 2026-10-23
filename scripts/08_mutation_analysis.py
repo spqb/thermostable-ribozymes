@@ -29,10 +29,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from gpsopt import data, dca, rna
-from gpsopt.analysis import mutation_frequency
-from gpsopt.config import DESIGN_GROUPS, FIGURES, GROUP_COLORS, GROUP_LABELS, TABLES
-from gpsopt.plotting import save_figure, use_paper_style
+from thermodca import data, dca, rna
+from thermodca.analysis import mutation_frequency
+from thermodca.config import DESIGN_GROUPS, FIGURES, GROUP_COLORS, GROUP_LABELS, TABLES
+from thermodca.plotting import save_figure, use_paper_style
 
 EXTRA = FIGURES / "extra"
 
