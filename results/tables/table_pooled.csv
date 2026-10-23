@@ -1,0 +1,4 @@
+group,N,top25_act_37,top25_act_60,hit_rate_37,hit_rate_60,ddG_kcal_mol,dH_bonds
+lowDCA_lowSB,1500,0.25,0.02,88.93,72.47,-4.13,5.81
+lowDCA_highSB,500,-0.83,-1.56,32.2,7.8,1.46,-0.38
+highDCA_lowSB,500,-2.12,-2.61,1.0,0.4,2.11,-2.18
