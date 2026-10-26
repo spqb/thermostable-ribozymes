@@ -45,11 +45,11 @@ def mean_pairwise_distance(seqs):
 
 def add_structure_columns(df, starts, structure):
     """ddG and dH-bonds of each design relative to its starting sequence."""
-    ref_dg = {i: rna.consensus_free_energy([s], structure, DDG_TEMPERATURE, "remove")[0]
+    ref_dg = {i: rna.consensus_free_energy([s], structure, DDG_TEMPERATURE)[0]
               for i, s in starts["sequence"].items()}
     ref_hb = {i: rna.hydrogen_bonds(s, structure, nested_only=True) for i, s in starts["sequence"].items()}
     df = df.copy()
-    df["ddg"] = rna.consensus_free_energy(df["sequence"].tolist(), structure, DDG_TEMPERATURE, "remove") \
+    df["ddg"] = rna.consensus_free_energy(df["sequence"].tolist(), structure, DDG_TEMPERATURE) \
         - df["start_id"].map(ref_dg)
     df["dhb"] = [rna.hydrogen_bonds(s, structure, nested_only=True) - ref_hb[i]
                  for s, i in zip(df["sequence"], df["start_id"])]
@@ -130,6 +130,7 @@ def main():
     # SI Table III: starting sequences
     lam_scores = pd.read_csv(TABLES / "lambert_scores.csv")
     t3 = starts[["name", "activity_37", "activity_60", "distance_azo"]].rename(columns={"name": "lambert_name"})
+    t3["activity_60"] = t3["activity_60"].fillna(-999)  # -999: no detected activity (convention of SI Table III)
     t3["sb_37"] = lam_scores.set_index("name").loc[t3["lambert_name"], "sb_37"].to_numpy()
     t3["dca_energy"] = lam_scores.set_index("name").loc[t3["lambert_name"], "dca_energy"].to_numpy()
     t3.to_csv(TABLES / "table_starting_sequences.csv")

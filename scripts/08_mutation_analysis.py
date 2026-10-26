@@ -44,7 +44,7 @@ def make_scorer(kind, params, structure):
     if kind == "sb":
         return lambda seqs: rna.sb_potential(seqs, structure, 37.0, n_workers=1)
     if kind == "fe":
-        return lambda seqs: rna.consensus_free_energy(seqs, structure, 60.0, "remove", n_workers=1)
+        return lambda seqs: rna.consensus_free_energy(seqs, structure, 60.0, n_workers=1)
     raise ValueError(kind)
 
 

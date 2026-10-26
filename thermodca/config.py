@@ -40,7 +40,8 @@ GROUP_COLORS = {
 
 # Sampling parameters of the three design regions, in the notation of Eq. (6):
 #   H_eff = beta * H_gen + lambda_S * S_sb + lambda_D * d_H(x_start, x)
-# (beta=0 for the SB-only group, which ignores H_gen). lambda_D = 2.0 is assumed for the three regions.
+# (beta=0 for the SB-only group, which ignores H_gen). lambda_D = 2.0 is assumed for the three regions;
+# see docs/design_parameters.md.
 DESIGN_PARAMS = {
     "lowDCA_lowSB": dict(beta=1.5, lambda_S=2.0, lambda_D=2.0),
     "lowDCA_highSB": dict(beta=1 / 0.8, lambda_S=-3.0, lambda_D=2.0),

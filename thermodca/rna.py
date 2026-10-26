@@ -73,22 +73,12 @@ def _fe_one(seq, structure, temperature):
     return _fold_compound(seq, temperature).eval_structure(structure)
 
 
-def consensus_free_energy(seqs, structure, temperature=37.0, pseudoknot="remove", n_workers=None):
+def consensus_free_energy(seqs, structure, temperature=37.0, n_workers=None):
     """Turner free energy (kcal/mol) of each sequence forced in the consensus structure.
 
-    pseudoknot:
-        "remove": the pseudoknot pairs are left unpaired (ViennaRNA cannot evaluate pseudoknots).
-        "merge":  square brackets are replaced by round ones.
-                  This yields a different (nested) pairing pattern; it is kept only to reproduce the
-                  Delta G panels of the supplementary figures.
+    The pseudoknot pairs (square brackets) are left unpaired, since ViennaRNA cannot evaluate pseudoknots.
     """
-    if pseudoknot == "remove":
-        structure = remove_pseudoknot(structure)
-    elif pseudoknot == "merge":
-        structure = structure.replace("[", "(").replace("]", ")")
-    else:
-        raise ValueError(pseudoknot)
-    fn = partial(_fe_one, structure=structure, temperature=temperature)
+    fn = partial(_fe_one, structure=remove_pseudoknot(structure), temperature=temperature)
     return np.array(_pmap(fn, seqs, n_workers))
 
 

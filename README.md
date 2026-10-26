@@ -43,7 +43,7 @@ makes step 2 fast).
 |---|---|---|
 | `01_score_sequences.py` | `H_gen`, `S_sb` (37 °C, 60 °C), ΔG of the consensus structure for the Lambert et al. data and for all tested sequences | – |
 | `02_design_mutants.py` | samples new designs from `H_eff` (multi-step Monte Carlo: Gibbs sweeps for the fast terms, Metropolis on `S_sb`) and selects them by region (Table I) | Sec. III.E, IV.C |
-| `04_figures_lambert_data.py` | `S_sb` vs `H_gen` and activity at 60 °C | Fig. 2, SI Figs. 2–3 |
+| `04_figures_lambert_data.py` | `S_sb` vs `H_gen` and activity at 60 °C; activity vs distance from Azoarcus | Fig. 2, SI Figs. 2–3, SI Fig. 7 |
 | `05_figures_experiment.py` | phase space of start 5, activity violins, Δ activity, overlap/noise controls | Figs. 3–5, SI Figs. 4, 6 |
 | `06_tables.py` | hit rates, activity quartiles, ΔΔG, ΔH-bonds, pool statistics | Table II, SI Tables II–IV |
 | `07_md_candidates.py` | best/worst design per start (for MD), FORNA input files | Appendix C |
@@ -62,11 +62,11 @@ exist: the high-throughput measurements are already in `data/experiment.csv`.
   score only), `highDCA_lowSB` = ↑H_gen ↓S_sb (structure score only), plus the `noise` and `overlap` controls.
 - **Activity** is `log10(f_sel / f_ref)`. It is normalised by subtracting, for each temperature, the mean over the
   detected overlap-group sequences; a *hit* has normalised activity ≥ −1. Sequences with no detected activity are
-  `NaN` in `data/experiment.csv` (and `-999` in the Lambert et al. table).
+  empty (`NaN`) in `data/experiment.csv` and in the Lambert et al. table.
 - Sequences have 197 nt: `GUG` + 193-nt aligned intron + `G`. The DCA model acts on the 193 central nucleotides and
   uses the adabmDCA 2.0 alphabet `-ACGU` (gap first).
 
-Mismatches between the paper, the original files and these scripts are listed in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
+The sampling parameters of the designs are in [docs/design_parameters.md](docs/design_parameters.md).
 
 ## Not reproduced here
 
@@ -77,7 +77,7 @@ Mismatches between the paper, the original files and these scripts are listed in
 
 The following supplementary material has no code in this repository yet:
 
-- SI Fig. 5 (MNIST classifier-only control) and SI Fig. 7 (activity vs distance for all Lambert designs);
+- SI Fig. 5 (MNIST classifier-only control);
 - the structure drawings were made with FORNA / ChimeraX; step 7 only writes the FORNA
   input files;
 - the sampling of the MNIST examples of Fig. 1 (only the sampled configurations are stored in

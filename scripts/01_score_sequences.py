@@ -32,8 +32,7 @@ def main(n_workers):
     out["dca_energy"] = dca.dca_energy(seqs, params)
     for T in (37, 60):
         out[f"sb_{T}"] = rna.sb_potential(seqs, structure, T, n_workers)
-        # "merge" reproduces the Delta G values shown in the supplementary figures (see rna.py)
-        out[f"dg_{T}"] = rna.consensus_free_energy(seqs, structure, T, "merge", n_workers)
+        out[f"dg_{T}"] = rna.consensus_free_energy(seqs, structure, T, n_workers)
     out.to_csv(TABLES / "lambert_scores.csv", index=False)
     print("Lambert dataset:", out.shape)
 

@@ -12,8 +12,14 @@ def load_azoarcus():
 
 
 def load_lambert():
-    """Sequences and activities of Lambert et al. (activity -999 = no detectable activity)."""
-    return pd.read_csv(DATA / "lambert_dataset.csv")
+    """All sequences of Lambert et al. with their activities (log10 scale, NaN = no detected activity or not tested).
+
+    ``matched`` marks the 3,429 sequences of the matched dataset used for the analyses of Fig. 2 and SI Figs. 2-3.
+    ``distance_azo`` is added here.
+    """
+    df = pd.read_csv(DATA / "lambert_dataset.csv")
+    df["distance_azo"] = hamming(df["sequence"].tolist(), load_azoarcus()["sequence"])
+    return df
 
 
 def load_starting_sequences():
