@@ -1,5 +1,7 @@
 # Biophysics-informed generative models for thermostable ribozymes
 
+![Graphical abstract](docs/graphical-abstract-ribozymes.png)
+
 Code and data of *"Biophysics-informed generative models improve activity and thermostability of designed
 ribozymes"*. Starting from Azoarcus group I intron variants that self-splice at 37 °C but not at 60 °C, we sample
 variants with 5–10 additional substitutions from an effective Hamiltonian that combines
