@@ -206,10 +206,9 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-# my repos
-data/
-models/
-generated/
+# local-only
+local_archive/
+.DS_Store
 
-reintegration/
-lore/per_giova/
+# stochastic outputs of scripts/02_design_mutants.py
+results/design/

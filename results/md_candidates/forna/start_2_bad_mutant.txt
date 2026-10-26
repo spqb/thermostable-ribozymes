@@ -1,0 +1,35 @@
+# Sequence and structure
+>start_2_bad_mutant
+GUGCAUUCCGUCGGGAAACCACCGAAUGGCUGUUGUCAAAUUCGGUGAAACCUAAGCGCAUGCUAGGGCGCAUGGCAACGCCGAGCCAAGCUUCGGCGGCAACGCCGUAGAAGGUGUAGAGACUAGACGGCAACCACCUAAGGCAAAAGCUAUGGUGAAGGCAUAGUCCAGAGAGUGGCAAACGUCACACAAAUCGG
+...(((((((..((....)).)))))))...((((((....((((((...((...((((((....))))))..))...))))))(((...(.((((((....)))))).)..)))...[.[[[[[...))))))((((...(((....)))..))))......]]]]]]..((.(((((....))))).....))..
+
+# Color codes
+>start_2_bad_mutant
+5:lightgrey
+8:lightgrey
+10:coral
+11:lightgrey
+23:lightgrey
+24:lightgrey
+27:lightgrey
+30:lightgrey
+33:lightgrey
+46:lightgrey
+60:lightgrey
+61:lightgrey
+64:forestgreen
+65:lightgrey
+66:coral
+67:coral
+71:lightgrey
+99:lightgrey
+101:lightgrey
+102:lightgrey
+108:forestgreen
+109:lightgrey
+133:lightgrey
+148:lightgrey
+172:lightgrey
+180:forestgreen
+183:lightgrey
+194:lightgrey

@@ -1,0 +1,25 @@
+[project]
+name = "thermostable-ribozymes"
+version = "0.1.0"
+description = "Biophysics-informed generative design of thermostable group I intron ribozymes"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "adabmDCA",
+    "matplotlib>=3.8",
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "scipy>=1.11",
+    "seaborn>=0.13",
+    "torch>=2.1",
+    "ViennaRNA>=2.6",
+]
+
+# adabmDCA 2.0 lives on the develop branch for now (it will move to main).
+[tool.uv.sources]
+adabmDCA = { git = "https://github.com/spqb/adabmDCApy.git", branch = "develop" }
+
+[tool.uv]
+# the scripts in scripts/ import the thermodca/ folder directly; nothing to build or install
+package = false

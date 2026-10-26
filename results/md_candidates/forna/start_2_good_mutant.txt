@@ -1,0 +1,36 @@
+# Sequence and structure
+>start_2_good_mutant
+GUGAAUUCCGUCGGGAAACCGCGGAAUGGCUGUUGUCAAAUUCGGUGAAACCUAAGCGCUUGUCAAAGCGCAUGGCAACGCCGAGCCAAGCUUCGGCGGCAACGCCGAAGAAGGUGUAGAGACUAGACGGCAACCACCUAAAGCAAAAGCUAUGGUGAAGGCAUAGUCCAGAGAGUGGCGAACGUCACACAAAUCGG
+...(((((((..((....)).)))))))...((((((....((((((...((...((((((....))))))..))...))))))(((...(.((((((....)))))).)..)))...[.[[[[[...))))))((((...(((....)))..))))......]]]]]]..((.(((((....))))).....))..
+
+# Color codes
+>start_2_good_mutant
+4:forestgreen
+5:lightgrey
+8:lightgrey
+10:coral
+11:lightgrey
+21:forestgreen
+23:coral
+24:lightgrey
+27:lightgrey
+30:lightgrey
+33:lightgrey
+46:lightgrey
+60:cornflowerblue
+61:lightgrey
+63:forestgreen
+65:lightgrey
+66:lightgrey
+67:lightgrey
+71:lightgrey
+99:lightgrey
+101:lightgrey
+102:lightgrey
+109:lightgrey
+133:lightgrey
+142:forestgreen
+148:lightgrey
+172:lightgrey
+183:lightgrey
+194:lightgrey
