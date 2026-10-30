@@ -55,24 +55,49 @@ def activity_vs_distance(df, bin_width=5, max_distance=70):
     frac60 = act.groupby("bin", observed=False)["activity_60"].apply(
         lambda x: (x > ACTIVITY_THRESHOLD_60).mean()
     )
-    return labels, frac37.reindex(labels).fillna(0), frac60.reindex(labels).fillna(0)
+    counts = d.groupby("bin", observed=False).size().reindex(labels).fillna(0).astype(int)
+    return labels, frac37.reindex(labels).fillna(0), frac60.reindex(labels).fillna(0), counts
 
 
-def plot_activity_vs_distance(labels, frac37, frac60):
-    use_paper_style(14, **{"text.usetex": False})
-    fig, axs = plt.subplots(1, 2, figsize=(16, 4.5), dpi=300)
-    for ax, values, color, ylabel, title in [
-        (axs[0], frac37, "skyblue", "Active fraction at T = 37℃", "All sequences"),
-        (axs[1], frac60, "orange", "Fraction above threshold\nat T = 60℃", "Sequences active at T = 37℃"),
-    ]:
-        ax.bar(range(len(labels)), values.values, color=color, edgecolor="black")
-        ax.set_xticks(range(len(labels)))
-        ax.set_xticklabels(labels, rotation=45)
-        ax.set_xlabel("Distance from Azoarcus")
-        ax.set_ylabel(ylabel)
-        ax.set_title(title)
-    for ax, letter in zip(axs, "AB"):
-        ax.text(-0.14, 1.08, letter, transform=ax.transAxes, fontsize=20, fontweight="bold")
+def plot_activity_vs_distance(labels, frac37, frac60, counts):
+    """Single panel: active fraction at 37C (bars) and, hatched inside each bar, the part also above the 60C cutoff.
+
+    The hatched height is frac37 * frac60, i.e. the fraction of all the sequences of the bin that are active at 37C
+    and above the cutoff at 60C; the percentage written above the bar is frac60 (relative to the active ones).
+    """
+    use_paper_style(18, **{"hatch.linewidth": 0.8})
+    x = np.arange(len(labels))
+    both = frac37.values * frac60.values
+    fig, ax = plt.subplots(figsize=(11, 5.5), dpi=300)
+    ax.bar(x, frac37.values, width=0.8, color="#a6cee3", edgecolor="black", linewidth=0.8,
+           label=r"Active at $T = 37^\circ$C", zorder=2)
+    ax.bar(x, both, width=0.8, color="#fdbf6f", edgecolor="#b35806", hatch="///", linewidth=0.8,
+           label=r"Active at $T = 37^\circ$C and above" "\n" r"threshold at $T = 60^\circ$C", zorder=3)
+    ax.bar(x, frac37.values, width=0.8, fill=False, edgecolor="black", linewidth=0.8, zorder=4)
+    for xi, f37, f60, n in zip(x, frac37.values, frac60.values, counts.values):
+        if n == 0:
+            continue
+        if f37 > 0:
+            ax.text(xi, f37 + 0.015, rf"{100 * f60:.0f}\%", ha="center", va="bottom", fontsize=13, color="#b35806",
+                    fontweight="bold")
+        ax.text(xi, -0.03, f"$n={n}$", ha="center", va="top", fontsize=11, color="0.35",
+                transform=ax.get_xaxis_transform())
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, rotation=45)
+    ax.tick_params(axis="x", pad=20)
+    ax.set_xlabel("Distance from Azoarcus")
+    ax.set_ylabel("Fraction of sequences")
+    ax.set_ylim(0, frac37.max() + 0.1)
+    ax.set_yticks(np.arange(0, 1.01, 0.2))
+    ax.set_xlim(-0.6, len(labels) - 0.4)
+    ax.yaxis.grid(True, color="0.9", zorder=0)
+    ax.set_axisbelow(True)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+    ax.legend(frameon=False, loc="upper right")
+    ax.text(0.99, 0.70, r"\% = fraction of the active sequences" "\n" r"above threshold at $T = 60^\circ$C",
+            transform=ax.transAxes,
+            ha="right", va="top", fontsize=13, color="#b35806")
     fig.tight_layout()
     save_figure(fig, "si_fig7_activity_vs_distance")
     plt.close(fig)
