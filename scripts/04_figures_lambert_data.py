@@ -74,12 +74,14 @@ def plot_activity_vs_distance(labels, frac37, frac60, counts):
     ax.bar(x, both, width=0.8, color="#fdbf6f", edgecolor="#b35806", hatch="///", linewidth=0.8,
            label=r"Active at $T = 37^\circ$C and above" "\n" r"threshold at $T = 60^\circ$C", zorder=3)
     ax.bar(x, frac37.values, width=0.8, fill=False, edgecolor="black", linewidth=0.8, zorder=4)
-    for xi, f37, f60, n in zip(x, frac37.values, frac60.values, counts.values):
+    label_height = 0.07  # room (in data units) needed by a percentage label
+    for xi, f37, f60, f_both, n in zip(x, frac37.values, frac60.values, both, counts.values):
         if n == 0:
             continue
         if f37 > 0:
-            ax.text(xi, f37 + 0.015, rf"{100 * f60:.0f}\%", ha="center", va="bottom", fontsize=13, color="#b35806",
-                    fontweight="bold")
+            # just above the hatched part, or above the whole bar when the blue part is too short to hold the label
+            y = f_both + 0.012 if f37 - f_both >= label_height else f37 + 0.012
+            ax.text(xi, y, rf"{100 * f60:.0f}\%", ha="center", va="bottom", fontsize=13, color="#8c3d03", zorder=5)
         ax.text(xi, -0.03, f"$n={n}$", ha="center", va="top", fontsize=11, color="0.35",
                 transform=ax.get_xaxis_transform())
     ax.set_xticks(x)
