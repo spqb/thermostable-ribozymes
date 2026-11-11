@@ -212,3 +212,6 @@ local_archive/
 
 # stochastic outputs of scripts/02_design_mutants.py
 results/design/
+
+# SI LaTeX sources and previews (kept locally, not in the repo)
+si/
