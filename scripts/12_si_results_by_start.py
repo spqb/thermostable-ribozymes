@@ -65,7 +65,7 @@ def with_limits(df):
         limit = np.log10(1.0 / df[f"ref_count_{T}"]) + offset - ref_mean
         df[f"lim_{T}"] = limit
         df[f"a_{T}"] = df[f"norm_{T}"].where(~undetected, -np.inf)   # for the figure and the medians
-        df[f"c_{T}"] = df[f"norm_{T}"].where(~undetected, limit)     # censored substitution, for quantiles
+        df[f"c_{T}"] = df[f"norm_{T}"].where(~undetected, limit)     # detection-limit substitution (unused)
         df[f"undet_{T}"] = undetected
         df[f"missing_{T}"] = ~(df[f"ref_count_{T}"] > 0)
     df["delta"] = df["a_60"] - df["a_37"]
@@ -85,12 +85,11 @@ def summarize(g):
         "missing": int(g["missing_37"].sum() + g["missing_60"].sum()),
         "median_act_37": g["a_37"].median(),
         "median_act_60": g["a_60"].median(),
-        "top25_act_37": q75(g["c_37"]),
-        "top25_act_60": q75(g["c_60"]),
-        # the quantile is an upper bound only where the substituted limits actually move it,
-        # that is where it would differ if the undetected sequences were taken at -inf
-        "top25_censored_37": not np.isclose(q75(g["c_37"]), q75(g["a_37"])),
-        "top25_censored_60": not np.isclose(q75(g["c_60"]), q75(g["a_60"])),
+        "top25_act_37": q75(g["a_37"]),
+        "top25_act_60": q75(g["a_60"]),
+        # the quartile falls among the undetected designs, i.e. it is itself -inf
+        "top25_censored_37": bool(np.isinf(q75(g["a_37"]))),
+        "top25_censored_60": bool(np.isinf(q75(g["a_60"]))),
         "hits_37": int(g["hit_37"].sum()),
         "hits_60": int(g["hit_60"].sum()),
         "hits_both": int((g["hit_37"] & g["hit_60"]).sum()),
@@ -166,9 +165,9 @@ def num(x, nd=2):
 
 
 def bound(r, T):
-    """Top quartile, prefixed by \leq when undetected sequences contribute to it."""
+    """Top quartile, starred when it falls among the undetected designs (and is therefore -inf)."""
     v = num(r[f"top25_act_{T}"])
-    return (r"$\leq$\," + v) if r[f"top25_censored_{T}"] else v
+    return (v + r"$^{*}$") if r[f"top25_censored_{T}"] else v
 
 
 def write_latex(table, pooled, path):
