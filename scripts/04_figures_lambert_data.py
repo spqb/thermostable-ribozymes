@@ -6,6 +6,7 @@ Writes  results/figures/fig2_sb_vs_hgen_37C        main text Fig. 2 (S_sb at 37C
         results/figures/si_fig2_dG_37C               SI Fig. 2, Delta G panel only
         results/figures/si_fig3_active_fraction_60C  SI Fig. 3: S_sb and Delta G at 60C
         results/figures/si_fig7_activity_vs_distance SI Fig. 7: activity vs distance from Azoarcus (all designs)
+        results/figures/si_fig_sb_37_vs_60           SI: S_sb computed at 37C versus 60C (Fig. 2 subset)
         results/tables/lambert_correlations.csv      Pearson correlations of the scores with the distance
 
 Activity thresholds ("illustrative cutoffs", SI): -2.76 at 37C and -2 at 60C. The 60C activities used for Fig. 2 were in
@@ -139,6 +140,28 @@ def delta_g_panel(ax, df, T):
     ax.legend()
 
 
+def sb_37_vs_60_panel(ax, df):
+    """S_sb computed at 37C against S_sb computed at 60C, for the subset used in Fig. 2."""
+    active = df["active_60"]
+    kw = dict(alpha=1.0, edgecolors="k", linewidths=0.3)
+    ax.scatter(df.loc[active, "sb_37"], df.loc[active, "sb_60"], c="forestgreen", label="Active at 60°C", **kw)
+    ax.scatter(df.loc[~active, "sb_37"], df.loc[~active, "sb_60"], c="coral", label="Inactive at 60°C", **kw)
+
+    lims = [min(df["sb_37"].min(), df["sb_60"].min()) - 1, max(df["sb_37"].max(), df["sb_60"].max()) + 1]
+    ax.plot(lims, lims, color="black", linestyle=":", linewidth=1.0, label="Identity")
+    ax.axvline(SB_THRESHOLD[37], color="black", linestyle="-.", linewidth=1.0)
+    ax.axhline(SB_THRESHOLD[60], color="black", linestyle="--", linewidth=1.0)
+
+    r, _ = pearsonr(df["sb_37"], df["sb_60"])
+    ax.text(0.04, 0.96, f"$r = {r:.3f}$", transform=ax.transAxes, va="top", ha="left",
+            bbox=dict(boxstyle="round,pad=0.4", facecolor="white", edgecolor="grey", alpha=0.9))
+    ax.set_xlim(*lims), ax.set_ylim(*lims)
+    ax.set_xlabel(r"$\mathcal{S}_\mathrm{sb}(x, 37^\circ\mathrm{C})$")
+    ax.set_ylabel(r"$\mathcal{S}_\mathrm{sb}(x, 60^\circ\mathrm{C})$")
+    ax.legend(loc="lower right")
+    return r
+
+
 def main():
     df = load_table()
 
@@ -191,6 +214,14 @@ def main():
     fig.tight_layout()
     save_figure(fig, "si_fig2_dG_37C")
     plt.close(fig)
+
+    # SI section "Model and thermodynamic scores": S_sb at 37C versus S_sb at 60C
+    fig, ax = plt.subplots(figsize=(8, 7), dpi=300)
+    r = sb_37_vs_60_panel(ax, sub)
+    fig.tight_layout()
+    save_figure(fig, "si_fig_sb_37_vs_60")
+    plt.close(fig)
+    print(f"S_sb(37C) vs S_sb(60C): Pearson r = {r:.3f} on {len(sub)} sequences")
 
 
 if __name__ == "__main__":

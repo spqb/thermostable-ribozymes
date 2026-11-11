@@ -121,6 +121,9 @@ def strip(ax, designs, col, groups, ylabel, undet_y, width=0.26, show_hit=True):
     ax.set_ylim(undet_y - 0.4, lo)
 
 
+# pooled Delta Delta G and Delta H-bonds (Table II of the main text, scripts/06_tables.py)
+POOLED_STRUCT = {"lowDCA_lowSB": (-4.13, 5.81), "lowDCA_highSB": (1.46, -0.38), "highDCA_lowSB": (2.11, -2.18)}
+
 GROUP_TEX = {
     "lowDCA_lowSB": r"$\downarrow\mathcal{H}_\mathrm{gen}\downarrow\mathcal{S}_\mathrm{sb}$",
     "lowDCA_highSB": r"$\downarrow\mathcal{H}_\mathrm{gen}\uparrow\mathcal{S}_\mathrm{sb}$",
@@ -144,19 +147,20 @@ def write_latex(table, pooled, path):
             r = table.loc[(sid, g)]
             cells = [f"{sid}" if k == 0 else "", GROUP_TEX[g], f"{int(r['N'])}",
                      f"{int(r['undetected_37'])}/{int(r['undetected_60'])}",
-                     num(r["median_act_37"]), num(r["median_act_60"]),
+                     num(r["top25_act_37"]), num(r["top25_act_60"]),
                      f"{r['hit_rate_37']:.1f}", f"{r['hit_rate_60']:.1f}",
                      "---" if np.isnan(r["retention"]) else f"{r['retention']:.1f}",
-                     num(r["median_delta_hits37"])]
+                     num(r["median_delta_hits37"]), num(r["ddG_kcal_mol"]), num(r["dH_bonds"])]
             rows.append(" & ".join(cells) + r" \\")
         rows.append(r"\hline" if sid != list(STARTS)[-1] else r"\hline")
     for g in DESIGN_GROUPS:
         r = pooled.loc[g]
         cells = ["All" if g == DESIGN_GROUPS[0] else "", GROUP_TEX[g], f"{int(r['N'])}",
                  f"{int(r['undetected_37'])}/{int(r['undetected_60'])}",
-                 num(r["median_act_37"]), num(r["median_act_60"]),
+                 num(r["top25_act_37"]), num(r["top25_act_60"]),
                  f"{r['hit_rate_37']:.1f}", f"{r['hit_rate_60']:.1f}",
-                 f"{r['retention']:.1f}", num(r["median_delta_hits37"])]
+                 f"{r['retention']:.1f}", num(r["median_delta_hits37"]),
+                 num(POOLED_STRUCT[g][0]), num(POOLED_STRUCT[g][1])]
         rows.append(" & ".join(cells) + r" \\")
     Path(path).write_text("\n".join(rows) + "\n")
 
