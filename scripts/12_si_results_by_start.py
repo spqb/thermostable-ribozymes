@@ -38,12 +38,34 @@ def panel_labels(axs, offset=(-0.07, 1.04)):
         ax.text(*offset, rf"\textbf{{{letter}}}", transform=ax.transAxes, fontsize=17, va="bottom", ha="left")
 
 
-def with_inf(df):
-    """Normalised activities with undetected = -inf (missing stays NaN; there is none among the designs)."""
+def with_limits(df):
+    """Normalised activities, plus the detection limit of the undetected sequences.
+
+    An undetected sequence (reference reads but no reacted read) has no finite activity. Instead of
+    an arbitrary substitution, we give it the activity it would have had with a single reacted read,
+
+        a_T^lim = log10(1 / f_ref) + log10(N_ref / N_sel) - mean_ref(b_T),
+
+    which is an upper bound on its true activity: the sequence is somewhere below it. Quantiles
+    computed with this substitution are therefore upper bounds too, and they stay finite. The ratio
+    N_ref / N_sel of the assigned reads of the two samples is recovered from the sequences with a
+    finite activity, for which it is the difference between the activity and log10(sel/ref).
+
+    Hit rates are not computed with the limits: an undetected sequence is classified as inactive, as
+    in Sec. S6. This is consistent here, because no undetected *design* has a limit above the hit
+    threshold (only 14 and 7 weakly covered noise controls do).
+    """
     df = df.copy()
     for T in TEMPS:
         undetected = (df[f"ref_count_{T}"] > 0) & (df[f"sel_count_{T}"] == 0)
-        df[f"a_{T}"] = df[f"norm_{T}"].where(~undetected, -np.inf)
+        finite = (df[f"ref_count_{T}"] > 0) & (df[f"sel_count_{T}"] > 0)
+        offset = np.median(df.loc[finite, f"activity_{T}"]
+                           - np.log10(df.loc[finite, f"sel_count_{T}"] / df.loc[finite, f"ref_count_{T}"]))
+        ref_mean = df.loc[df["group"] == "overlap", f"activity_{T}"].mean()
+        limit = np.log10(1.0 / df[f"ref_count_{T}"]) + offset - ref_mean
+        df[f"lim_{T}"] = limit
+        df[f"a_{T}"] = df[f"norm_{T}"].where(~undetected, -np.inf)   # for the figure and the medians
+        df[f"c_{T}"] = df[f"norm_{T}"].where(~undetected, limit)     # censored substitution, for quantiles
         df[f"undet_{T}"] = undetected
         df[f"missing_{T}"] = ~(df[f"ref_count_{T}"] > 0)
     df["delta"] = df["a_60"] - df["a_37"]
@@ -63,8 +85,12 @@ def summarize(g):
         "missing": int(g["missing_37"].sum() + g["missing_60"].sum()),
         "median_act_37": g["a_37"].median(),
         "median_act_60": g["a_60"].median(),
-        "top25_act_37": q75(g["a_37"]),
-        "top25_act_60": q75(g["a_60"]),
+        "top25_act_37": q75(g["c_37"]),
+        "top25_act_60": q75(g["c_60"]),
+        # the quantile is an upper bound only where the substituted limits actually move it,
+        # that is where it would differ if the undetected sequences were taken at -inf
+        "top25_censored_37": not np.isclose(q75(g["c_37"]), q75(g["a_37"])),
+        "top25_censored_60": not np.isclose(q75(g["c_60"]), q75(g["a_60"])),
         "hits_37": int(g["hit_37"].sum()),
         "hits_60": int(g["hit_60"].sum()),
         "hits_both": int((g["hit_37"] & g["hit_60"]).sum()),
@@ -139,6 +165,12 @@ def num(x, nd=2):
     return f"{x + 0.0:.{nd}f}".replace("-0.00", "0.00").replace("-", "$-$")
 
 
+def bound(r, T):
+    """Top quartile, prefixed by \leq when undetected sequences contribute to it."""
+    v = num(r[f"top25_act_{T}"])
+    return (r"$\leq$\," + v) if r[f"top25_censored_{T}"] else v
+
+
 def write_latex(table, pooled, path):
     """Body rows of SI Table S5 (one block per starting sequence, plus the pooled block)."""
     rows = []
@@ -147,7 +179,7 @@ def write_latex(table, pooled, path):
             r = table.loc[(sid, g)]
             cells = [f"{sid}" if k == 0 else "", GROUP_TEX[g], f"{int(r['N'])}",
                      f"{int(r['undetected_37'])}/{int(r['undetected_60'])}",
-                     num(r["top25_act_37"]), num(r["top25_act_60"]),
+                     bound(r, 37), bound(r, 60),
                      f"{r['hit_rate_37']:.1f}", f"{r['hit_rate_60']:.1f}",
                      "---" if np.isnan(r["retention"]) else f"{r['retention']:.1f}",
                      num(r["median_delta_hits37"]), num(r["ddG_kcal_mol"]), num(r["dH_bonds"])]
@@ -157,7 +189,7 @@ def write_latex(table, pooled, path):
         r = pooled.loc[g]
         cells = ["All" if g == DESIGN_GROUPS[0] else "", GROUP_TEX[g], f"{int(r['N'])}",
                  f"{int(r['undetected_37'])}/{int(r['undetected_60'])}",
-                 num(r["top25_act_37"]), num(r["top25_act_60"]),
+                 bound(r, 37), bound(r, 60),
                  f"{r['hit_rate_37']:.1f}", f"{r['hit_rate_60']:.1f}",
                  f"{r['retention']:.1f}", num(r["median_delta_hits37"]),
                  num(POOLED_STRUCT[g][0]), num(POOLED_STRUCT[g][1])]
@@ -207,7 +239,7 @@ def si_fig08(designs, table):
 
 
 def main():
-    df = with_inf(data.load_experiment_scored())
+    df = with_limits(data.load_experiment_scored())
     designs = df[df["group"].isin(DESIGN_GROUPS)].copy()
     designs["start_id"] = designs["start_id"].astype(int)
     table, pooled = results_table(designs)
