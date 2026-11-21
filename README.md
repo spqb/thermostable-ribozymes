@@ -1,5 +1,7 @@
 # Biophysics-informed generative models for thermostable ribozymes
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24418219.svg)](https://doi.org/10.5281/zenodo.24418219)
+
 ![Graphical abstract](docs/graphical-abstract-ribozymes.png)
 
 Code and data of *"Biophysics-informed generative models improve activity and thermostability of designed
@@ -74,6 +76,12 @@ exist: the high-throughput measurements are already in `data/experiment.csv`.
 
 The sampling parameters of the designs are in [docs/design_parameters.md](docs/design_parameters.md).
 
+## Data availability
+
+Everything in this repository is also archived on Zenodo, together with the files and the code that are not
+tracked here: <https://doi.org/10.5281/zenodo.24418219>. The archive is what is needed to reproduce the figures of
+the paper and the molecular dynamics analyses of Appendix C.
+
 ## Not reproduced here
 
 - `02_design_mutants.py` is tested but not tuned for every group. With 600 chains it selects designs for the joint
@@ -89,7 +97,7 @@ The following supplementary material has no code in this repository yet:
 - the sampling of the MNIST examples of Fig. 1 (only the sampled configurations are stored in
   `data/mnist_toy_samples.npz`, the RBM is not included);
 - structure prediction (AlphaFold 3) and molecular dynamics of Appendix C (only the choice of the mutants is
-  implemented, step 7).
+  implemented, step 7; the molecular dynamics analysis and its figure are in the Zenodo archive above).
 
 ## Reference
 
