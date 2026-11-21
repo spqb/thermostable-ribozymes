@@ -44,20 +44,27 @@ def load_table():
 def activity_vs_distance(df, bin_width=5, max_distance=70):
     """SI Fig. 7: active fraction at 37C and fraction above the 60C cutoff among the sequences active at 37C.
 
-    Sequences without detected activity at 37C are left out of the first fraction and sequences not detected at 60C
-    count as below the cutoff.
+    Only the libraries (models) tested at 60C in full are used, so that both fractions refer to the same
+    population: in Lambert et al. the 60C condition covers every variant of DCA_T=1, DCA T=0.3 and VAE and at
+    most 17% of the other libraries. Undetected activities (-inf) count as inactive and stay in the denominators;
+    missing activities (no reference read) are left out: the first fraction is over the variants measured at 37C,
+    the second over the variants active at 37C and measured at 60C.
     """
+    tested = df.groupby("model")["ref_count_60"].apply(lambda x: x.notna().all())
+    df = df[df["model"].isin(tested.index[tested])]
+    print("SI Fig. 7 libraries (all variants tested at 60C):", sorted(tested.index[tested]), f"{len(df)} variants")
     edges = np.arange(0, max_distance + bin_width, bin_width)
     labels = [f"{a}-{b}" for a, b in zip(edges[:-1], edges[1:])]
-    d = df[df["activity_37"].notna()].copy()
+    d = df[df["measured_37"]].copy()
     d["bin"] = pd.cut(d["distance_azo"], edges, labels=labels, right=False)
     frac37 = d.groupby("bin", observed=False)["activity_37"].apply(lambda x: (x > ACTIVITY_THRESHOLD_37).mean())
-    act = d[d["activity_37"] > ACTIVITY_THRESHOLD_37]
+    act = d[(d["activity_37"] > ACTIVITY_THRESHOLD_37) & d["measured_60"]]
     frac60 = act.groupby("bin", observed=False)["activity_60"].apply(
         lambda x: (x > ACTIVITY_THRESHOLD_60).mean()
     )
     counts = d.groupby("bin", observed=False).size().reindex(labels).fillna(0).astype(int)
-    return labels, frac37.reindex(labels).fillna(0), frac60.reindex(labels).fillna(0), counts
+    # frac60 stays NaN in a bin with no active variant tested at 60C (no data, drawn without hatch or label)
+    return labels, frac37.reindex(labels).fillna(0), frac60.reindex(labels), counts
 
 
 def plot_activity_vs_distance(labels, frac37, frac60, counts):
@@ -68,7 +75,7 @@ def plot_activity_vs_distance(labels, frac37, frac60, counts):
     """
     use_paper_style(18, **{"hatch.linewidth": 0.8})
     x = np.arange(len(labels))
-    both = frac37.values * frac60.values
+    both = frac37.values * np.nan_to_num(frac60.values)
     fig, ax = plt.subplots(figsize=(11, 5.5), dpi=300)
     ax.bar(x, frac37.values, width=0.8, color="#a6cee3", edgecolor="black", linewidth=0.8,
            label=r"Active at $T = 37^\circ$C", zorder=2)
@@ -79,7 +86,7 @@ def plot_activity_vs_distance(labels, frac37, frac60, counts):
     for xi, f37, f60, f_both, n in zip(x, frac37.values, frac60.values, both, counts.values):
         if n == 0:
             continue
-        if f37 > 0:
+        if f37 > 0 and not np.isnan(f60):
             # just above the hatched part, or above the whole bar when the blue part is too short to hold the label
             y = f_both + 0.012 if f37 - f_both >= label_height else f37 + 0.012
             ax.text(xi, y, rf"{100 * f60:.0f}\%", ha="center", va="bottom", fontsize=13, color="#8c3d03", zorder=5)

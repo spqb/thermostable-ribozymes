@@ -63,8 +63,12 @@ exist: the high-throughput measurements are already in `data/experiment.csv`.
 - **Groups** follow the paper: `lowDCA_lowSB` = ↓H_gen ↓S_sb (joint), `lowDCA_highSB` = ↓H_gen ↑S_sb (evolutionary
   score only), `highDCA_lowSB` = ↑H_gen ↓S_sb (structure score only), plus the `noise` and `overlap` controls.
 - **Activity** is `log10(f_sel / f_ref)`. It is normalised by subtracting, for each temperature, the mean over the
-  detected overlap-group sequences; a *hit* has normalised activity ≥ −1. Sequences with no detected activity are
-  empty (`NaN`) in `data/experiment.csv` and in the Lambert et al. table.
+  detected overlap-group sequences; a *hit* has normalised activity ≥ −1. In `data/experiment.csv` a sequence with
+  control reads but no reacted read is **undetected**, activity `-inf`: it is inactive and is kept in every count,
+  quantile and hit rate (the finite positions used for it in Figs. 4 and 5 are display conventions only). A sequence
+  with no control read is **missing**, activity empty (`NaN`): it is left out of every statistic (one noise control
+  at 60 °C). `data/lambert_dataset.csv` follows the same activity convention, with its read counts; there an empty 60 °C
+  activity can also mean that the variant was not tested at 60 °C.
 - Sequences have 197 nt: `GUG` + 193-nt aligned intron + `G`. The DCA model acts on the 193 central nucleotides and
   uses the adabmDCA 2.0 alphabet `-ACGU` (gap first).
 

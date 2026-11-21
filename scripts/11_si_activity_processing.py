@@ -24,6 +24,7 @@ import pandas as pd
 from scipy import stats
 
 from thermodca import data
+from thermodca.analysis import hit_rate
 from thermodca.config import HIT_THRESHOLD, TABLES
 from thermodca.plotting import save_figure, use_paper_style
 
@@ -46,7 +47,8 @@ def si_fig06_noise(df):
     fig, axs = plt.subplots(2, 2, figsize=(11, 7.5), dpi=300)
 
     for ax, T in zip(axs[0], TEMPS):
-        raw = noise[f"activity_{T}"].dropna().to_numpy()
+        raw = noise[f"activity_{T}"].to_numpy()
+        raw = raw[np.isfinite(raw)]  # detected only
         ax.hist(raw, bins=15, color=TCOLOR[T], edgecolor="black", density=True, alpha=0.8)
         grid = np.linspace(raw.min() - 0.3, raw.max() + 0.6, 400)
         ax.plot(grid, stats.norm.pdf(grid, raw.mean(), raw.std(ddof=1)), "k--", lw=2,
@@ -57,7 +59,8 @@ def si_fig06_noise(df):
         ax.legend(fontsize=11)
 
     for ax, T in zip(axs[1], TEMPS):
-        norm = noise[f"norm_{T}"].dropna().to_numpy()
+        norm = noise[f"norm_{T}"].to_numpy()
+        norm = norm[np.isfinite(norm)]  # detected only
         ax.hist(norm, bins=15, color=TCOLOR[T], edgecolor="black", alpha=0.8)
         ax.axvline(HIT_THRESHOLD, color="black", ls="-.", lw=2, label="Hit threshold")
         ax.axvline(np.quantile(norm, 0.999), color="0.35", ls=":", lw=2,
@@ -89,8 +92,9 @@ def si_fig07_reference(df, lambert):
         ax.set_ylabel("Count")
 
     for ax, T in zip(axs[1][:2], TEMPS):
-        act = ref[f"norm_{T}"].dropna().to_numpy()
-        n_undet = int(ref[f"norm_{T}"].isna().sum())
+        act = ref[f"norm_{T}"].to_numpy()
+        n_undet = int(np.isneginf(act).sum())
+        act = act[np.isfinite(act)]
         ax.hist(act, bins=25, color=TCOLOR[T], edgecolor="black", alpha=0.8)
         ax.axvline(HIT_THRESHOLD, color="black", ls="-.", lw=2, label="Hit threshold")
         ax.axvline(0.0, color="0.35", ls=":", lw=2, label="Reference mean")
@@ -101,7 +105,7 @@ def si_fig07_reference(df, lambert):
 
     ax = axs[1][2]
     both = ref.merge(lambert, on="sequence", suffixes=("", "_lam"))
-    keep = both["activity_37_lam"].notna() & both["norm_37"].notna()
+    keep = np.isfinite(both["activity_37_lam"]) & np.isfinite(both["norm_37"])
     x = both.loc[keep, "activity_37_lam"].to_numpy()
     y = both.loc[keep, "norm_37"].to_numpy()
     pearson = np.corrcoef(x, y)[0, 1]
@@ -130,12 +134,14 @@ def si_table04(df):
                 "ref_median": ref.median(), "ref_q1": ref.quantile(0.25), "ref_q3": ref.quantile(0.75),
                 "missing": int((ref == 0).sum()),
                 "undetected": int(((sel == 0) & (ref > 0)).sum()),
-                "detected": int(norm.notna().sum()),
+                "detected": int(np.isfinite(norm).sum()),
                 "hits": int((norm >= HIT_THRESHOLD).sum()),
+                "hit_pct": hit_rate(sub, T),
             })
     table = pd.DataFrame(rows)
-    table["undetected_pct"] = 100 * table["undetected"] / table["N"]
-    table["hit_pct"] = 100 * table["hits"] / table["N"]
+    # missing sequences (no control read) have no activity and are left out of the denominators
+    table["undetected_pct"] = 100 * table["undetected"] / (table["N"] - table["missing"])
+    table = table[[c for c in table.columns if c != "hit_pct"] + ["hit_pct"]]
     TABLES.mkdir(parents=True, exist_ok=True)
     table.to_csv(TABLES / "si_table04_read_statistics.csv", index=False)
     return table
@@ -149,13 +155,16 @@ def main():
     print(table.to_string(index=False, float_format=lambda v: f"{v:.1f}"))
 
     for T in TEMPS:
-        raw = df.loc[df.group == "noise", f"activity_{T}"].dropna()
-        norm = df.loc[df.group == "noise", f"norm_{T}"].dropna()
+        raw = df.loc[df.group == "noise", f"activity_{T}"]
+        raw = raw[np.isfinite(raw)]
+        norm = df.loc[df.group == "noise", f"norm_{T}"]
+        norm = norm[np.isfinite(norm)]
         print(f"{T}C noise: raw mean {raw.mean():.2f} sd {raw.std():.2f} skew {stats.skew(raw):.2f} "
               f"Shapiro p {stats.shapiro(raw).pvalue:.1e}; normalised max {norm.max():.2f}, "
               f"99.9th percentile {np.quantile(norm, 0.999):.2f}, hits {(norm >= HIT_THRESHOLD).sum()}")
         ref = df.loc[df.group == "overlap", f"activity_{T}"]
-        print(f"{T}C reference mean subtracted: {ref.mean():.4f} (over {ref.notna().sum()} detected)")
+        ref = ref[np.isfinite(ref)]
+        print(f"{T}C reference mean subtracted: {ref.mean():.4f} (over {len(ref)} detected)")
 
     si_fig06_noise(df)
     print("reference-group agreement with Lambert et al.:", si_fig07_reference(df, lambert))

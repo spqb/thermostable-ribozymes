@@ -9,7 +9,9 @@ Writes  results/figures/fig3_phase_space_start5           Fig. 3: designs of sta
 
 Activities are normalised by subtracting, for each temperature, the mean activity of the detected overlap-group
 sequences. A design is a "hit" if its normalised activity is >= -1 (10% of the overlap activity).
-"Not detected" activities are plotted at the sentinel value UNDETECTED.
+Undetected activities (reference reads but no reacted read) are -inf: they enter every quantile, count and hit
+rate, and are drawn at the sentinel value UNDETECTED (Fig. 4, SI overlap figure) or INACTIVE_DELTA (Fig. 5) for
+display only. Missing activities (no reference read, NaN) are excluded from every statistic.
 """
 import sys
 from pathlib import Path
@@ -24,11 +26,11 @@ import seaborn as sns
 from matplotlib.patches import Patch
 
 from thermodca import data
-from thermodca.analysis import INACTIVE_DELTA, delta_activity_table
+from thermodca.analysis import INACTIVE_DELTA, delta_activity_table, hit_rate, quantile
 from thermodca.config import GROUP_COLORS, GROUP_LABELS, HIT_THRESHOLD, TABLES
 from thermodca.plotting import save_figure, use_paper_style
 
-UNDETECTED = -5.0   # plotting value of sequences without detected activity
+UNDETECTED = -5.0   # display position of undetected activities (-inf), below the plotted range
 
 
 # ---------------------------------------------------------------------------------------------- Fig. 3
@@ -39,7 +41,7 @@ def fig3_phase_space(df, start_id=5):
 
     groups = ["lowDCA_highSB", "lowDCA_lowSB", "highDCA_lowSB"]
     sub = df[(df["start_id"] == start_id) & df["group"].isin(groups)].copy()
-    hit_rate = {g: [100 * sub.loc[sub.group == g, f"hit_{T}"].mean() for T in (37, 60)] for g in groups}
+    rates = {g: [hit_rate(sub[sub.group == g], T) for T in (37, 60)] for g in groups}
     sub["Region"] = sub["group"].map(GROUP_LABELS)
     palette = dict(zip([GROUP_LABELS[g] for g in groups], sns.color_palette("deep", n_colors=3)))
 
@@ -66,7 +68,7 @@ def fig3_phase_space(df, start_id=5):
         left = np.clip(xfrac + dx - w / 2, 0.04, 1.5)
         bottom = np.clip(yfrac + dy - h / 2, 0.02, 0.98 - h)
         iax = ax.inset_axes([left, bottom, w, h], transform=ax.transAxes)
-        vals = hit_rate[g]
+        vals = rates[g]
         bars = iax.bar([0, 1], vals, color=[color, color], alpha=0.9)
         iax.set_ylim(0, 100)
         iax.set_xticks([0, 1])
@@ -89,7 +91,7 @@ def fig3_phase_space(df, start_id=5):
     fig.tight_layout()
     save_figure(fig, f"fig3_phase_space_start{start_id}")
     plt.close(fig)
-    print("Fig. 3 hit rates (37C, 60C):", {g: [round(v, 1) for v in r] for g, r in hit_rate.items()})
+    print("Fig. 3 hit rates (37C, 60C):", {g: [round(v, 1) for v in r] for g, r in rates.items()})
 
 
 # ---------------------------------------------------------------------------------------------- Fig. 4
@@ -108,8 +110,8 @@ def fig4_violins(df):
         sub = df[df["group"] == g]
         centers.append(pos0 + 0.5)
         for pos, T in [(pos0, 37), (pos0 + 1, 60)]:
-            col = sub[f"norm_{T}"]
-            detected = col.dropna().to_numpy()
+            col = sub[f"norm_{T}"].dropna()   # missing sequences are not part of the statistics
+            detected = col[np.isfinite(col)].to_numpy()
             vp = ax_top.violinplot([detected], positions=[pos], widths=0.8, showmeans=False, showextrema=False,
                                    showmedians=False)
             for body in vp["bodies"]:
@@ -117,12 +119,13 @@ def fig4_violins(df):
                 body.set_edgecolor("black")
                 body.set_alpha(0.85)
                 bodies.append((body, pos))
-            q = np.percentile(col.fillna(UNDETECTED).to_numpy(), [25, 50, 75])  # undetected count as lowest
+            q = np.array([quantile(col, p) for p in (0.25, 0.5, 0.75)])  # undetected count as -inf
+            q = np.where(np.isfinite(q), q, UNDETECTED)  # a quartile among the undetected is drawn off-axis
             lines = ax_top.hlines(q, pos - 0.28, pos + 0.28, colors="white", linewidth=2.0, zorder=6)
             lines.set_path_effects([pe.Stroke(linewidth=3.2, foreground="black"), pe.Normal()])
-            n_missing = int(col.isna().sum())
-            fracs.append(n_missing / len(col))
-            texts.append(f"{n_missing}/{len(col)}")
+            n_undetected = int(np.isneginf(col).sum())
+            fracs.append(n_undetected / len(col))
+            texts.append(f"{n_undetected}/{len(col)}")
             colors.append(palette[g])
             positions.append(pos)
             tick_labels.append(labels[str(T)])
@@ -176,14 +179,14 @@ def fig5_delta(df):
     pal = {"lowDCA_lowSB": sns.color_palette("tab10")[1], "lowDCA_highSB": sns.color_palette("tab10")[0]}
 
     fig, ax = plt.subplots(figsize=(8, 4), dpi=300)
-    vals_all = hits["delta_activity"].to_numpy()
+    vals_all = hits["delta_display"].to_numpy()  # -inf (undetected at 60C) drawn at INACTIVE_DELTA
     edges = np.linspace(vals_all.min(), vals_all.max(), 25)
     medians = {}
     for g in groups:
-        vals = hits.loc[hits.group == g, "delta_activity"]
+        vals = hits.loc[hits.group == g, "delta_display"]
         sns.histplot(vals, bins=edges, stat="density", element="step", fill=True, alpha=0.28, linewidth=2.0,
                      color=pal[g], label=GROUP_LABELS[g], ax=ax)
-        med = np.median(vals)
+        med = quantile(hits.loc[hits.group == g, "delta_activity"], 0.5)
         medians[g] = med
         ax.axvline(med, color=pal[g], linestyle="-.", linewidth=2.0)
         joint = g == "lowDCA_lowSB"
@@ -192,7 +195,7 @@ def fig5_delta(df):
                 bbox=dict(facecolor="white", edgecolor=pal[g], alpha=0.85, boxstyle="round,pad=0.2"))
 
     # highlight the bin of designs with no detected activity at 60C
-    vals_blue = hits.loc[hits.group == "lowDCA_highSB", "delta_activity"].to_numpy()
+    vals_blue = hits.loc[hits.group == "lowDCA_highSB", "delta_display"].to_numpy()
     hist, _ = np.histogram(vals_blue, bins=edges, density=True)
     k = np.searchsorted(edges, INACTIVE_DELTA, side="right") - 1
     if 0 <= k < len(hist) and hist[k] > 0:
@@ -226,9 +229,17 @@ def si_fig4_overlap(df):
     use_paper_style(16)
     ov = df[df["group"] == "overlap"]
     fig, axs = plt.subplots(1, 2, figsize=(10, 4), dpi=300)
+    def shown(T):  # raw activity with undetected (-inf) at the display value UNDETECTED
+        a = ov[f"activity_{T}"].dropna()
+        return a.where(np.isfinite(a), UNDETECTED).to_numpy()
+
+    def detected_mean(T):
+        a = ov[f"activity_{T}"]
+        return a[np.isfinite(a)].mean()
+
     for ax, T, color in zip(axs, (37, 60), ("cornflowerblue", "firebrick")):
-        mean = ov[f"activity_{T}"].mean()
-        act = ov[f"activity_{T}"].fillna(UNDETECTED).to_numpy() - mean
+        mean = detected_mean(T)
+        act = shown(T) - mean
         ax.hist(act, bins=30, alpha=0.7, color=color)
         ax.axvline(HIT_THRESHOLD, color="black", linestyle="-.", linewidth=2, label="Hit threshold" if T == 60 else None)
         ax.set_xlabel(f"Activity {T}°C")
@@ -236,8 +247,8 @@ def si_fig4_overlap(df):
     axs[1].legend()
     fig.tight_layout()
     for ax, T in zip(axs, (37, 60)):
-        mean = ov[f"activity_{T}"].mean()
-        counts, edges = np.histogram(ov[f"activity_{T}"].fillna(UNDETECTED).to_numpy() - mean, bins=30)
+        mean = detected_mean(T)
+        counts, edges = np.histogram(shown(T) - mean, bins=30)
         x_no = UNDETECTED - mean + 0.15
         y = counts[np.clip(np.digitize([x_no], edges)[0] - 1, 0, len(counts) - 1)]
         ax.annotate("No activity detected", xy=(x_no, y), xytext=(x_no + 0.1, y + 0.3 * counts.max()),
@@ -251,7 +262,8 @@ def si_fig6_noise(df):
     noise = df[df["group"] == "noise"]
     fig, axs = plt.subplots(1, 2, figsize=(12, 4.5))
     for ax, T, color in zip(axs, (37, 60), ("skyblue", "lightcoral")):
-        ax.hist(noise[f"activity_{T}"].dropna(), bins=15, color=color, edgecolor="black")
+        raw = noise[f"activity_{T}"]
+        ax.hist(raw[np.isfinite(raw)], bins=15, color=color, edgecolor="black")
         ax.set_title(f"Raw Activity at {T}°C")
         ax.set_xlabel("Activity")
         ax.set_ylabel("Frequency")
@@ -263,7 +275,8 @@ def si_fig6_noise(df):
 def main():
     df = data.load_experiment_scored()
     for T in (37, 60):
-        thr = df.loc[df.group == "noise", f"norm_{T}"].quantile(0.999)
+        noise = df.loc[df.group == "noise", f"norm_{T}"]
+        thr = noise[np.isfinite(noise)].quantile(0.999)  # over the detected noise controls
         print(f"{T}C: 99.9th percentile of noise = {thr:.2f} (hit threshold {HIT_THRESHOLD})")
     fig3_phase_space(df)
     fig4_violins(df)

@@ -25,6 +25,7 @@ import pandas as pd
 from scipy import stats
 
 from thermodca import data
+from thermodca.analysis import hit_rate, quantile
 from thermodca.config import DESIGN_GROUPS, GROUP_COLORS, GROUP_LABELS, HIT_THRESHOLD, TABLES
 from thermodca.plotting import save_figure, use_paper_style
 
@@ -61,7 +62,8 @@ def with_limits(df):
         finite = (df[f"ref_count_{T}"] > 0) & (df[f"sel_count_{T}"] > 0)
         offset = np.median(df.loc[finite, f"activity_{T}"]
                            - np.log10(df.loc[finite, f"sel_count_{T}"] / df.loc[finite, f"ref_count_{T}"]))
-        ref_mean = df.loc[df["group"] == "overlap", f"activity_{T}"].mean()
+        ref = df.loc[df["group"] == "overlap", f"activity_{T}"]
+        ref_mean = ref[np.isfinite(ref)].mean()
         limit = np.log10(1.0 / df[f"ref_count_{T}"]) + offset - ref_mean
         df[f"lim_{T}"] = limit
         df[f"a_{T}"] = df[f"norm_{T}"].where(~undetected, -np.inf)   # for the figure and the medians
@@ -73,7 +75,7 @@ def with_limits(df):
 
 
 def q75(x):
-    return np.quantile(np.sort(x.to_numpy()), 0.75, method="linear")
+    return quantile(x, 0.75)
 
 
 def summarize(g):
@@ -83,8 +85,8 @@ def summarize(g):
         "undetected_37": int(g["undet_37"].sum()),
         "undetected_60": int(g["undet_60"].sum()),
         "missing": int(g["missing_37"].sum() + g["missing_60"].sum()),
-        "median_act_37": g["a_37"].median(),
-        "median_act_60": g["a_60"].median(),
+        "median_act_37": quantile(g["a_37"], 0.5),
+        "median_act_60": quantile(g["a_60"], 0.5),
         "top25_act_37": q75(g["a_37"]),
         "top25_act_60": q75(g["a_60"]),
         # the quartile falls among the undetected designs, i.e. it is itself -inf
@@ -93,11 +95,11 @@ def summarize(g):
         "hits_37": int(g["hit_37"].sum()),
         "hits_60": int(g["hit_60"].sum()),
         "hits_both": int((g["hit_37"] & g["hit_60"]).sum()),
-        "hit_rate_37": 100 * g["hit_37"].mean(),
-        "hit_rate_60": 100 * g["hit_60"].mean(),
+        "hit_rate_37": hit_rate(g, 37),
+        "hit_rate_60": hit_rate(g, 60),
         # retention: fraction of the 37 C hits that are also hits at 60 C
-        "retention": 100 * h37["hit_60"].mean() if len(h37) else np.nan,
-        "median_delta_hits37": h37["delta"].median() if len(h37) else np.nan,
+        "retention": hit_rate(h37, 60) if len(h37) else np.nan,
+        "median_delta_hits37": quantile(h37["delta"], 0.5) if len(h37) else np.nan,
         "sb_max": g["sb_37"].max() if "sb_37" in g else np.nan,
     })
 
@@ -119,6 +121,7 @@ def strip(ax, designs, col, groups, ylabel, undet_y, width=0.26, show_hit=True):
             v = designs.loc[(designs.group == g) & (designs.start_id == s), col].to_numpy()
             if col == "delta":
                 v = v[designs.loc[(designs.group == g) & (designs.start_id == s), "hit_37"].to_numpy()]
+            v = v[~np.isnan(v)]  # missing values are not shown
             fin = v[np.isfinite(v)]
             x0 = s + off[k]
             ax.scatter(x0 + rng.uniform(-0.05, 0.05, len(fin)), fin, s=4, color=GROUP_COLORS[g],
@@ -128,7 +131,7 @@ def strip(ax, designs, col, groups, ylabel, undet_y, width=0.26, show_hit=True):
                 ax.scatter(x0 + rng.uniform(-0.05, 0.05, nu), undet_y + rng.uniform(-0.15, 0.15, nu), s=4,
                            color=GROUP_COLORS[g], alpha=0.45, lw=0, rasterized=True)
             if len(v):
-                med = np.median(v)
+                med = quantile(v, 0.5)
                 ax.plot([x0 - 0.07, x0 + 0.07], [max(med, undet_y)] * 2, color="black", lw=1.6, zorder=5)
     ax.axhspan(undet_y - 0.35, undet_y + 0.35, color="0.92", zorder=0)
     lo = ax.get_ylim()[1]
@@ -146,8 +149,10 @@ def strip(ax, designs, col, groups, ylabel, undet_y, width=0.26, show_hit=True):
     ax.set_ylim(undet_y - 0.4, lo)
 
 
-# pooled Delta Delta G and Delta H-bonds (Table II of the main text, scripts/06_tables.py)
-POOLED_STRUCT = {"lowDCA_lowSB": (-4.13, 5.81), "lowDCA_highSB": (1.46, -0.38), "highDCA_lowSB": (2.11, -2.18)}
+def pooled_struct():
+    """Pooled Delta Delta G and Delta H-bonds (Table II of the main text, written by scripts/06_tables.py)."""
+    t = pd.read_csv(TABLES / "table_pooled.csv", index_col=0)
+    return {g: (t.loc[g, "ddG_kcal_mol"], t.loc[g, "dH_bonds"]) for g in t.index}
 
 GROUP_TEX = {
     "lowDCA_lowSB": r"$\downarrow\mathcal{H}_\mathrm{gen}\downarrow\mathcal{S}_\mathrm{sb}$",
@@ -184,6 +189,7 @@ def write_latex(table, pooled, path):
                      num(r["median_delta_hits37"]), num(r["ddG_kcal_mol"]), num(r["dH_bonds"])]
             rows.append(" & ".join(cells) + r" \\")
         rows.append(r"\hline" if sid != list(STARTS)[-1] else r"\hline")
+    struct = pooled_struct()
     for g in DESIGN_GROUPS:
         r = pooled.loc[g]
         cells = ["All" if g == DESIGN_GROUPS[0] else "", GROUP_TEX[g], f"{int(r['N'])}",
@@ -191,7 +197,7 @@ def write_latex(table, pooled, path):
                  bound(r, 37), bound(r, 60),
                  f"{r['hit_rate_37']:.1f}", f"{r['hit_rate_60']:.1f}",
                  f"{r['retention']:.1f}", num(r["median_delta_hits37"]),
-                 num(POOLED_STRUCT[g][0]), num(POOLED_STRUCT[g][1])]
+                 num(struct[g][0]), num(struct[g][1])]
         rows.append(" & ".join(cells) + r" \\")
     Path(path).write_text("\n".join(rows) + "\n")
 
