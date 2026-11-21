@@ -10,10 +10,10 @@ variants with 5–10 additional substitutions from an effective Hamiltonian that
 
 - a DCA (Potts) model of the intron family, $H_{\mathrm{gen}}$, which keeps the sequences functionally plausible, and
 - a structure-based potential from the Turner nearest-neighbour model (ViennaRNA),
-  $S_{\mathrm{sb}} = -\sum_{(i,j)\,\in\,\mathrm{consensus}} p_{ij}$, the (negative) expected number of consensus
+  $S_{\mathrm{sb}} = -\sum_{(i,j) \in \mathrm{consensus}} p_{ij}$, the (negative) expected number of consensus
   base pairs at equilibrium,
 
-$$H_{\mathrm{eff}}(x \mid x_{\mathrm{start}}) = \beta\, H_{\mathrm{gen}}(x) + \lambda_S\, S_{\mathrm{sb}}(x) + \lambda_D\, d_H(x_{\mathrm{start}}, x).$$
+$$H_{\mathrm{eff}}(x \mid x_{\mathrm{start}}) = \beta H_{\mathrm{gen}}(x) + \lambda_S S_{\mathrm{sb}}(x) + \lambda_D d_H(x_{\mathrm{start}}, x).$$
 
 Both terms are needed to recover activity at 60 °C (hit rate 72.5% for the jointly optimised designs versus 7.8% and
 0.4% for either term alone).
@@ -63,13 +63,13 @@ exist: the high-throughput measurements are already in `data/experiment.csv`.
 - **Start sequences** are the ten variants of Lambert et al. that we mutate (`start_id` 1–10). Only the Azoarcus
   sequence is a "wild type".
 - **$S_{\mathrm{sb}}$ is negative**: $S_{\mathrm{sb}} = -\sum p_{ij}$; low (more negative) is favourable.
-- **Groups** follow the paper: `lowDCA_lowSB` = $\downarrow H_{\mathrm{gen}}\ \downarrow S_{\mathrm{sb}}$ (joint),
-  `lowDCA_highSB` = $\downarrow H_{\mathrm{gen}}\ \uparrow S_{\mathrm{sb}}$ (evolutionary score only),
-  `highDCA_lowSB` = $\uparrow H_{\mathrm{gen}}\ \downarrow S_{\mathrm{sb}}$ (structure score only), plus the `noise`
+- **Groups** follow the paper: `lowDCA_lowSB` = $\downarrow H_{\mathrm{gen}} \downarrow S_{\mathrm{sb}}$ (joint),
+  `lowDCA_highSB` = $\downarrow H_{\mathrm{gen}} \uparrow S_{\mathrm{sb}}$ (evolutionary score only),
+  `highDCA_lowSB` = $\uparrow H_{\mathrm{gen}} \downarrow S_{\mathrm{sb}}$ (structure score only), plus the `noise`
   and `overlap` controls.
 - **Activity** is $\log_{10}(f_{\mathrm{sel}} / f_{\mathrm{ref}})$. It is normalised by subtracting, for each
-  temperature, the mean over the
-  detected overlap-group sequences; a *hit* has normalised activity $\ge -1$. In `data/experiment.csv` a sequence with
+  temperature, the mean over the detected overlap-group sequences; a *hit* has normalised activity $\ge -1$.
+  In `data/experiment.csv` a sequence with
   control reads but no reacted read is **undetected**, activity `-inf`: it is inactive and is kept in every count,
   quantile and hit rate (the finite positions used for it in Figs. 4 and 5 are display conventions only). A sequence
   with no control read is **missing**, activity empty (`NaN`): it is left out of every statistic (one noise control
