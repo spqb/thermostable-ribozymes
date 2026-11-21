@@ -11,8 +11,8 @@ background of the assay, and both cutoffs sit at the top edge of that background
 this twice: as the activity of every variant against its distance from the wild type (top row), and
 as the distribution of the activity of all variants against that of the distant ones (bottom row).
 
-Sequences with no detected activity are censored, not zero, and are left out; the fraction of
-detected variants is itself reported against distance, since it is part of the same picture.
+Undetected activities (-inf in the data) are censored, not zero, and are left out, as are missing and
+untested ones (NaN): the figure is about the distribution of the detected activities.
 """
 import sys
 from pathlib import Path
@@ -71,7 +71,7 @@ def si_fig_lambert_cutoffs(lam):
 
     for col, T in enumerate((37, 60)):
         cut = CUTOFF[T]
-        sub = lam.dropna(subset=[f"activity_{T}"])
+        sub = lam[np.isfinite(lam[f"activity_{T}"])]   # detected activities only
         dist = sub["distance_azo"].to_numpy(float)
         act = sub[f"activity_{T}"].to_numpy(float)
         far = act[dist > FAR]
@@ -122,7 +122,7 @@ def main():
               f"detected variants beyond {FAR} substitutions ({s['above']:.1f}% above it, "
               f"largest {s['far_max']:.2f}); {s['n']} variants with a detected activity")
     for T in (37, 60):
-        sub = lam.dropna(subset=[f"activity_{T}"])
+        sub = lam[np.isfinite(lam[f"activity_{T}"])]
         print(f"  {T}C, fraction above the cutoff by distance bin:", {
             f"{lo}-{lo + 20}": round(100 * (s[f'activity_{T}'] > CUTOFF[T]).mean(), 1)
             for lo in range(0, 160, 20)

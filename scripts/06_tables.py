@@ -7,8 +7,9 @@ Writes  results/tables/table_pooled.csv(.tex)      Table II  : results pooled ov
         results/tables/table_pools.csv             SI Table IV: distance statistics of the design pools
 
 Definitions
-  hit rate   fraction of designs with overlap-normalised activity >= -1
-  top 25%    75th percentile of the normalised activity (undetected sequences count as -5)
+  hit rate   fraction of the measured designs with overlap-normalised activity >= -1
+  top 25%    75th percentile of the normalised activity (undetected sequences count as -inf, missing ones
+             are left out)
   ddG        mean change of the Turner free energy (60C) of the design in the consensus structure
              without the pseudoknot, relative to its starting sequence
   dH-bonds   mean change of the number of hydrogen bonds (GC: 3, AU/GU: 2) of the consensus pairs
@@ -24,16 +25,14 @@ import numpy as np
 import pandas as pd
 
 from thermodca import data, rna
+from thermodca.analysis import hit_rate, quantile
 from thermodca.config import DESIGN_GROUPS, TABLES
 
 DDG_TEMPERATURE = 60.0
 
 
-UNDETECTED = -5.0  # value given to sequences without detected activity when computing percentiles
-
-
 def top_quartile(x):
-    return np.percentile(x.fillna(UNDETECTED).to_numpy(), 75)
+    return quantile(x, 0.75)
 
 
 def mean_pairwise_distance(seqs):
@@ -61,8 +60,8 @@ def summarize(g):
         "N": len(g),
         "top25_act_37": top_quartile(g["norm_37"]),
         "top25_act_60": top_quartile(g["norm_60"]),
-        "hit_rate_37": 100 * g["hit_37"].mean(),
-        "hit_rate_60": 100 * g["hit_60"].mean(),
+        "hit_rate_37": hit_rate(g, 37),
+        "hit_rate_60": hit_rate(g, 60),
         "ddG_kcal_mol": g["ddg"].mean(),
         "dH_bonds": g["dhb"].mean(),
     })
@@ -76,7 +75,7 @@ GROUP_TEX = {
 
 
 def tex_row(label, r, start=None):
-    num = lambda x: f"{x + 0.0:.2f}".replace("-0.00", "0.00").replace("-", "$-$")
+    num = lambda x: r"$-\infty$" if np.isneginf(x) else f"{x + 0.0:.2f}".replace("-0.00", "0.00").replace("-", "$-$")
     cells = [label, str(int(r["N"])), num(r["top25_act_37"]), num(r["top25_act_60"]), f"{r['hit_rate_37']:.1f}\\%",
              f"{r['hit_rate_60']:.1f}\\%", num(r["ddG_kcal_mol"]), num(r["dH_bonds"])]
     if start is not None:
@@ -130,7 +129,7 @@ def main():
     # SI Table III: starting sequences
     lam_scores = pd.read_csv(TABLES / "lambert_scores.csv")
     t3 = starts[["name", "activity_37", "activity_60", "distance_azo"]].rename(columns={"name": "lambert_name"})
-    t3["activity_60"] = t3["activity_60"].fillna(-999)  # -999: no detected activity (convention of SI Table III)
+    # activity_60 is -inf for all ten starts: control reads at 60C but no reacted read (undetected)
     t3["sb_37"] = lam_scores.set_index("name").loc[t3["lambert_name"], "sb_37"].to_numpy()
     t3["dca_energy"] = lam_scores.set_index("name").loc[t3["lambert_name"], "dca_energy"].to_numpy()
     t3.to_csv(TABLES / "table_starting_sequences.csv")

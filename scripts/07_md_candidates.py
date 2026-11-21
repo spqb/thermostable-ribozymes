@@ -26,10 +26,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import numpy as np
 import pandas as pd
 
 from thermodca import data
-from thermodca.analysis import INACTIVE_DELTA, delta_activity_table, mutation_frequency
+from thermodca.analysis import delta_activity_table, mutation_frequency
 from thermodca.config import MD
 
 COLORS = dict(away_from_azo="forestgreen", back_to_azo="coral", new="cornflowerblue", unchanged="lightgrey")
@@ -64,7 +65,7 @@ def main():
     starts = data.load_starting_sequences()
     df = data.load_experiment_scored()
     hits = delta_activity_table(df)
-    hits = hits[hits["delta_activity"] > INACTIVE_DELTA]  # detected activity at 60C
+    hits = hits[np.isfinite(hits["delta_activity"])]  # detected activity at 60C
 
     rows = []
     for sid in starts.index:

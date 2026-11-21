@@ -76,7 +76,7 @@ def plot_mutation_frequency(df, start_id, start_seq, structure, threshold=0.5):
         paired[[i, j]] = True
     fig, axs = plt.subplots(3, 1, figsize=(12, 6), dpi=300, sharex=True)
     for ax, g in zip(axs, ["highDCA_lowSB", "lowDCA_highSB", "lowDCA_lowSB"]):
-        sub = df[(df["start_id"] == start_id) & (df["group"] == g)]
+        sub = df[(df["start_id"] == start_id) & (df["group"] == g) & df["measured_60"]]
         top = sub.nlargest(int(0.25 * len(sub)), "norm_60")
         freq = mutation_frequency(top["sequence"].tolist(), start_seq)
         for pos in np.flatnonzero(paired):
